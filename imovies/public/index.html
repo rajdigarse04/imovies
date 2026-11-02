@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMovies – Book Your Cinema Experience</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════ NAVBAR ═══════════════════════ -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a class="logo" href="#" onclick="App.navigate('home'); return false;">
+        <span class="logo-icon">🎬</span>
+        <span class="logo-text">IMovies</span>
+      </a>
+
+        <!-- Mobile hamburger -->
+        <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-links" id="nav-links">
+          <a href="#" class="nav-link active" data-view="home"
+            onclick="App.navigate('home');    closeMobileMenu(); return false;">Now Playing</a>
+          <a href="#" class="nav-link" data-view="profile"
+            onclick="App.navigate('profile'); closeMobileMenu(); return false;">My Bookings</a>
+          <a href="#" class="nav-link" data-view="admin"
+            onclick="App.navigate('admin');   closeMobileMenu(); return false;" id="admin-nav-link"
+            style="display:none">Admin</a>
+        </nav>
+
+        <!-- Guest state -->
+        <div class="nav-auth" id="nav-guest">
+          <button class="btn btn-ghost" onclick="Auth.openModal('login')">Login</button>
+          <button class="btn btn-primary" onclick="Auth.openModal('register')">Register</button>
+        </div>
+
+        <!-- Logged-in state -->
+        <div class="nav-user hidden" id="nav-user">
+          <div class="user-menu" id="user-menu" onclick="toggleUserDropdown()">
+            <div class="avatar" id="nav-avatar">U</div>
+            <span class="user-name" id="nav-username">User</span>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          <div class="user-dropdown hidden" id="user-dropdown">
+            <a href="#" onclick="App.navigate('profile'); toggleUserDropdown(); return false;">My Bookings</a>
+            <a href="#" onclick="Auth.logout(); return false;" class="danger">Logout</a>
+          </div>
+        </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ TOAST ═══════════════════════ -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VIEW: HOME
+  ════════════════════════════════════════════════════════════ -->
+  <main id="view-home" class="view active">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-badge">🎟️ Now Showing</div>
+        <h1 class="hero-title">Your perfect<br /><span class="accent">cinema experience</span></h1>
+        <p class="hero-sub">Browse movies, pick your seats, and book instantly.</p>
+        <div class="hero-search">
+          <span class="search-icon">🔍</span>
+          <input id="hero-search" type="text" placeholder="Search movies, genres, cast…" autocomplete="off" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Genre Filter -->
+    <section class="genre-filter-section">
+      <div class="container">
+        <div class="genre-tabs" id="genre-tabs">
+          <button class="genre-tab active" data-genre="">All</button>
+          <button class="genre-tab" data-genre="Action">Action</button>
+          <button class="genre-tab" data-genre="Sci-Fi">Sci-Fi</button>
+          <button class="genre-tab" data-genre="Drama">Drama</button>
+          <button class="genre-tab" data-genre="Thriller">Thriller</button>
+          <button class="genre-tab" data-genre="Adventure">Adventure</button>
+          <button class="genre-tab" data-genre="Biography">Biography</button>
+          <button class="genre-tab" data-genre="Crime">Crime</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Movies Grid -->
+    <section class="movies-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title" id="movies-heading">Now Playing</h2>
+          <span class="movie-count" id="movie-count"></span>
+        </div>
+        <div class="movies-grid" id="movies-grid">
+          <!-- Populated by JS -->
+        </div>
+        <div class="empty-state hidden" id="movies-empty">
+          <div class="empty-icon">🎭</div>
+          <p>No movies found. Try a different search.</p>
+        </div>
+        <div class="skeleton-grid" id="movies-skeleton">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VIEW: MOVIE DETAIL
+  ════════════════════════════════════════════════════════════ -->
+  <main id="view-movie-detail" class="view">
+    <div class="container">
+      <button class="back-btn" onclick="App.navigate('home')">← Back to Movies</button>
+      <div class="movie-detail" id="movie-detail-content">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VIEW: SEAT PICKER
+  ════════════════════════════════════════════════════════════ -->
+  <main id="view-seat-picker" class="view">
+    <div class="container">
+      <button class="back-btn" id="seat-back-btn" onclick="App.navigateBack()">← Back</button>
+
+      <!-- Movie strip -->
+      <div class="booking-strip" id="booking-strip">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="seat-picker-layout">
+        <!-- Left: Seat map -->
+        <div class="seat-map-wrapper">
+          <div class="screen-label">
+            <div class="screen-line"></div>
+            <span>S C R E E N</span>
+            <div class="screen-line"></div>
+          </div>
+
+          <div class="seat-legend">
+            <div class="legend-item">
+              <div class="seat-demo available"></div> Available
+            </div>
+            <div class="legend-item">
+              <div class="seat-demo booked"></div> Booked
+            </div>
+            <div class="legend-item">
+              <div class="seat-demo selected"></div> Selected
+            </div>
+          </div>
+
+          <div class="seat-grid" id="seat-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Right: Booking summary -->
+        <div class="booking-summary">
+          <h3 class="summary-title">Booking Summary</h3>
+
+          <div class="summary-info" id="summary-info">
+            <div class="summary-row">
+              <span class="label">Movie</span>
+              <span class="value" id="sum-movie">—</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Date &amp; Time</span>
+              <span class="value" id="sum-datetime">—</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Hall</span>
+              <span class="value" id="sum-hall">—</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Price / seat</span>
+              <span class="value" id="sum-price">—</span>
+            </div>
+          </div>
+
+          <div class="summary-seats">
+            <span class="label">Selected Seats</span>
+            <div class="seat-chips" id="seat-chips">
+              <span class="no-seats-msg">No seats selected</span>
+            </div>
+          </div>
+
+          <div class="summary-total">
+            <span>Total</span>
+            <span class="total-amount" id="total-amount">₹ 0</span>
+          </div>
+
+          <button class="btn btn-primary btn-full" id="confirm-btn" onclick="Booking.confirmBooking()" disabled>
+            Confirm Booking
+          </button>
+          <p class="summary-note">Max 10 seats per booking</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VIEW: PROFILE (MY BOOKINGS)
+  ════════════════════════════════════════════════════════════ -->
+  <main id="view-profile" class="view">
+    <div class="container">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar">U</div>
+        <div>
+          <h2 class="profile-name" id="profile-name">User</h2>
+          <p class="profile-email" id="profile-email">email@example.com</p>
+        </div>
+      </div>
+
+      <h3 class="section-title" style="margin-bottom:1.5rem">My Bookings</h3>
+
+      <div class="bookings-list" id="bookings-list">
+        <!-- Populated by JS -->
+      </div>
+      <div class="empty-state hidden" id="bookings-empty">
+        <div class="empty-icon">🎟️</div>
+        <p>No bookings yet.</p>
+        <button class="btn btn-primary" style="margin-top:1rem" onclick="App.navigate('home')">Browse Movies</button>
+      </div>
+      <div class="skeleton-grid" id="bookings-skeleton" style="grid-template-columns:1fr">
+        <div class="skeleton-card" style="height:120px"></div>
+        <div class="skeleton-card" style="height:120px"></div>
+        <div class="skeleton-card" style="height:120px"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODAL: AUTH
+  ════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="auth-modal-overlay" onclick="Auth.closeModal(event)">
+    <div class="modal auth-modal">
+      <button class="modal-close" onclick="Auth.closeModal()">✕</button>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="Auth.switchTab('login')">Login</button>
+        <button class="auth-tab" id="tab-register" onclick="Auth.switchTab('register')">Register</button>
+      </div>
+
+      <!-- Login form -->
+      <form id="login-form" onsubmit="Auth.handleLogin(event)" novalidate>
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <div class="form-error hidden" id="login-error"></div>
+        <button class="btn btn-primary btn-full" type="submit" id="login-submit">Login</button>
+        <p class="auth-switch">New here? <a href="#" onclick="Auth.switchTab('register'); return false;">Create an
+            account</a></p>
+      </form>
+
+      <!-- Register form -->
+      <form id="register-form" class="hidden" onsubmit="Auth.handleRegister(event)" novalidate>
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input id="reg-name" type="text" placeholder="Jane Doe" autocomplete="name" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <input id="reg-email" type="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password <span class="hint">(min 6 chars)</span></label>
+          <input id="reg-password" type="password" placeholder="••••••••" autocomplete="new-password" required />
+        </div>
+        <div class="form-error hidden" id="register-error"></div>
+        <button class="btn btn-primary btn-full" type="submit" id="register-submit">Create Account</button>
+        <p class="auth-switch">Already have an account? <a href="#"
+            onclick="Auth.switchTab('login'); return false;">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODAL: BOOKING CONFIRMATION
+  ════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="confirm-modal-overlay">
+    <div class="modal confirm-modal">
+      <div class="confirm-icon">🎉</div>
+      <h2 class="confirm-title">Booking Confirmed!</h2>
+      <div class="confirm-details" id="confirm-details">
+        <!-- Populated by JS -->
+      </div>
+      <div class="confirm-actions">
+        <button class="btn btn-primary" onclick="App.navigate('profile'); closeConfirmModal()">View My Bookings</button>
+        <button class="btn btn-ghost" onclick="App.navigate('home');    closeConfirmModal()">Browse More Movies</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VIEW: ADMIN
+  ════════════════════════════════════════════════════════════ -->
+  <main id="view-admin" class="view">
+    <div class="container">
+      <div class="profile-header">
+        <div class="profile-avatar" style="background:var(--danger)">⚙</div>
+        <div>
+          <h2 class="profile-name">Admin Panel</h2>
+          <p class="profile-email">Manage movies &amp; showtimes</p>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <!-- Add Movie -->
+        <div class="admin-card">
+          <h3 class="admin-card-title">➕ Add Movie</h3>
+          <form id="admin-movie-form" onsubmit="Admin.addMovie(event)" novalidate>
+            <div class="form-group"><label>Title *</label><input id="adm-title" type="text" required
+                placeholder="Movie title" /></div>
+            <div class="form-group"><label>Genre <span class="hint">(comma-separated)</span></label><input
+                id="adm-genre" type="text" placeholder="Action, Sci-Fi" /></div>
+            <div class="form-group"><label>Language</label><input id="adm-lang" type="text" placeholder="English" />
+            </div>
+            <div class="form-group"><label>Duration (min) *</label><input id="adm-dur" type="number" min="1" required
+                placeholder="120" /></div>
+            <div class="form-group"><label>Rating (0-10)</label><input id="adm-rating" type="number" min="0" max="10"
+                step="0.1" placeholder="8.0" /></div>
+            <div class="form-group"><label>Director</label><input id="adm-director" type="text"
+                placeholder="Director name" /></div>
+            <div class="form-group"><label>Synopsis</label><input id="adm-synopsis" type="text"
+                placeholder="Short description" /></div>
+            <div class="form-group"><label>Poster URL</label><input id="adm-poster" type="url"
+                placeholder="https://…" /></div>
+            <div class="form-group"><label>Cast <span class="hint">(comma-separated)</span></label><input id="adm-cast"
+                type="text" placeholder="Actor 1, Actor 2" /></div>
+            <div class="form-error hidden" id="adm-movie-error"></div>
+            <button class="btn btn-primary btn-full" type="submit" id="adm-movie-btn">Add Movie</button>
+          </form>
+        </div>
+
+        <!-- Add Showtime -->
+        <div class="admin-card">
+          <h3 class="admin-card-title">🕐 Add Showtime</h3>
+          <form id="admin-showtime-form" onsubmit="Admin.addShowtime(event)" novalidate>
+            <div class="form-group">
+              <label>Movie *</label>
+              <select id="adm-movie-id" required>
+                <option value="">— Select a movie —</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Date *</label><input id="adm-date" type="date" required /></div>
+            <div class="form-group"><label>Time *</label><input id="adm-time" type="time" required /></div>
+            <div class="form-group"><label>Hall *</label><input id="adm-hall" type="text" required
+                placeholder="Hall A" /></div>
+            <div class="form-group"><label>Total Seats</label><input id="adm-seats" type="number" min="1" max="500"
+                placeholder="80" /></div>
+            <div class="form-group"><label>Price (₹) *</label><input id="adm-price" type="number" min="1" required
+                placeholder="300" /></div>
+            <div class="form-error hidden" id="adm-showtime-error"></div>
+            <button class="btn btn-primary btn-full" type="submit" id="adm-showtime-btn">Add Showtime</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Movie list with delete -->
+      <h3 class="section-title" style="margin:2rem 0 1rem">All Movies</h3>
+      <div id="admin-movies-list"></div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="logo">
+          <span class="logo-icon">🎬</span>
+          <span class="logo-text">IMovies</span>
+        </div>
+        <p class="footer-copy">© 2024 IMovies. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS (load order matters — app.js first, others after) -->
+  <script src="/js/app.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/movies.js"></script>
+  <script src="/js/booking.js"></script>
+  <script src="/js/profile.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+
+</html>
